@@ -1,5 +1,3 @@
-import { find, remove, findIndex } from 'lodash';
-
 export default class Cart {
   items = [];
 
