@@ -19,7 +19,7 @@ describe('Cart', () => {
 
   describe('getTotal()', () => {
     it('should return 0 when getTotal() is executed in a newly created instance', () => {
-      expect(cart.getTotal()).toEqual(0);
+      expect(cart.getTotal().getAmount()).toEqual(0);
     });
 
     it('should multiply quantity and price and receive the total amount', () => {
@@ -28,7 +28,7 @@ describe('Cart', () => {
         quantity: 2,
       });
 
-      expect(cart.getTotal()).toEqual(70776);
+      expect(cart.getTotal().getAmount()).toEqual(70776);
     });
 
     it('should update total when have more than one item', () => {
@@ -42,7 +42,7 @@ describe('Cart', () => {
         quantity: 2,
       });
 
-      expect(cart.getTotal()).toEqual(141556);
+      expect(cart.getTotal().getAmount()).toEqual(141556);
     });
 
     it('should add product quantity to equal item and update total', () => {
@@ -70,7 +70,7 @@ describe('Cart', () => {
         ]),
       );
 
-      expect(cart.getTotal()).toEqual(141554);
+      expect(cart.getTotal().getAmount()).toEqual(141554);
     });
 
     it('should update total when a product is removed', () => {
@@ -86,7 +86,7 @@ describe('Cart', () => {
 
       cart.remove(product2);
 
-      expect(cart.getTotal()).toEqual(70776);
+      expect(cart.getTotal().getAmount()).toEqual(70776);
     });
   });
 
@@ -103,7 +103,7 @@ describe('Cart', () => {
       cart.add({ product: product2, quantity: 3 });
 
       expect(cart.summary()).toMatchSnapshot();
-      expect(cart.getTotal()).toBeGreaterThan(0);
+      expect(cart.getTotal().getAmount()).toBeGreaterThan(0);
     });
 
     it('should reset the cart when checkout() is called', () => {
@@ -111,7 +111,18 @@ describe('Cart', () => {
 
       cart.checkout();
 
-      expect(cart.getTotal()).toEqual(0);
+      expect(cart.getTotal().getAmount()).toEqual(0);
+    });
+
+    it('should apply percentage discount when certain quantity threshold is passed', () => {
+      const condition = {
+        percentage: 30,
+        minimum: 2,
+      };
+
+      cart.add({ product, condition, quantity: 3 });
+
+      expect(cart.getTotal().getAmount()).toEqual(74315);
     });
   });
 });
