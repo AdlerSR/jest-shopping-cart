@@ -7,25 +7,21 @@ export default class Cart {
     }, 0);
   }
 
-  updateEqualItemQuantity(item, equalItem) {
-    let itemIndex = this.items.findIndex(
-      (itemData) => itemData.product === equalItem.product,
-    );
-
-    this.items.forEach((itemData, index) =>
-      index === itemIndex
-        ? { ...itemData, quantity: (equalItem.quantity += item.quantity) }
-        : itemData,
-    );
-  }
-
   add(item) {
     const equalItem = this.items.find(
       (localItem) => localItem.product === item.product,
     );
 
     if (equalItem) {
-      this.updateEqualItemQuantity(item, equalItem);
+      let itemIndex = this.items.findIndex(
+        (itemData) => itemData.product === equalItem.product,
+      );
+
+      this.items.forEach((itemData, index) =>
+        index === itemIndex
+          ? { ...itemData, quantity: (equalItem.quantity += item.quantity) }
+          : itemData,
+      );
 
       return;
     }
@@ -37,5 +33,20 @@ export default class Cart {
     let index = this.items.findIndex((item) => item.product === product);
 
     this.items.splice(index, 1);
+  }
+
+  summary() {
+    const total = this.getTotal();
+    const items = this.items;
+
+    return { total, items };
+  }
+
+  checkout() {
+    const { total, items } = this.summary();
+
+    this.items = [];
+
+    return { total, items };
   }
 }
