@@ -3,6 +3,22 @@ import Dinero from 'dinero.js';
 Dinero.defaultCurrency = 'BRL';
 Dinero.defaultPrecision = 2;
 
+const calculateDiscount = (item, amount) => {
+  if (item.quantity > item.condition.minimum) {
+    return amount.percentage(item.condition.percentage);
+  }
+
+  return Dinero({ amount: 0 });
+};
+
+const calculateQuantityDiscount = (item, amount) => {
+  if (item.quantity > item.condition.quantity) {
+    return amount.percentage(50);
+  }
+
+  return Dinero({ amount: 0 });
+};
+
 export default class Cart {
   items = [];
 
@@ -11,12 +27,12 @@ export default class Cart {
       const amount = Dinero({ amount: item.quantity * item.product.price });
       let discount = Dinero({ amount: 0 });
 
-      if (
-        item.condition &&
-        item.condition.percentage &&
-        item.quantity > item.condition.minimum
-      ) {
-        discount = amount.percentage(item.condition.percentage);
+      if (item.condition?.percentage) {
+        discount = calculateDiscount(item, amount);
+      }
+
+      if (item.condition?.quantity) {
+        discount = calculateQuantityDiscount(item, amount);
       }
 
       return acc.add(amount).subtract(discount);
